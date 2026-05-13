@@ -43,9 +43,9 @@ public:
     // Submit any callable, get back a future for its return value
     template<typename F, typename... Args>
     auto submit(F&& f, Args&&... args)
-        -> std::future<typename std::result_of<F(Args...)>::type>
+        -> std::future<typename std::invoke_result<F, Args...>::type>
     {
-        using ReturnType = typename std::result_of<F(Args...)>::type;
+        using ReturnType = typename std::invoke_result<F, Args...>::type;
 
         // packaged_task binds the callable and makes it future-compatible
         auto task = std::make_shared<std::packaged_task<ReturnType()>>(
