@@ -131,30 +131,6 @@ The goal of this project is not to beat grep — it's to demonstrate:
 
 ---
 
-## Key concepts (interview reference)
-
-**Q: Why mmap instead of fread?**  
-A: `fread` copies data twice (kernel → libc buffer → your buffer). `mmap` maps file 
-pages directly into the process — zero copies. The OS prefetches pages when you call 
-`madvise(MADV_SEQUENTIAL)`.
-
-**Q: Why condition_variable instead of a spin lock?**  
-A: Spin locks burn CPU waiting. `condition_variable::wait()` puts the thread to sleep 
-in the OS scheduler — zero CPU until notified. Correct for I/O-bound workloads where 
-threads spend most time waiting for file reads.
-
-**Q: Why packaged_task over plain std::function?**  
-A: `packaged_task` is a `std::function` that's wired to a `std::future`. When the task 
-completes, the result is automatically stored and the future becomes ready. This gives 
-us a clean producer/consumer contract without manual synchronization.
-
-**Q: Why does grep beat searchd?**  
-A: `std::regex` is slow. GNU grep uses Boyer-Moore-Horspool for literal patterns — 
-sub-linear in the best case. Replacing `std::regex` with a literal string search 
-(`std::string::find`) brings `searchd` close to grep performance.
-
----
-
 ## License
 
 MIT
